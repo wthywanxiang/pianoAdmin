@@ -131,9 +131,9 @@ export default {
       this.listLoading = true
       getReserveByFuzzyQuery(this.listQuery).then(res => {
         console.log('res', res)
-        this.list = res.data
+        this.list = res.data.list
         this.listLoading = false
-        this.total = this.list.length
+        this.total = res.data.total
         console.log('total', this.total)
       })
     },
