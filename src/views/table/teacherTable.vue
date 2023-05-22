@@ -288,8 +288,8 @@ export default {
   methods: {
     getData() {
       getTeacherDetailsByFuzzyQuery(this.listQuery).then(res => {
-        this.list = res.data
-        this.total = this.list.length
+        this.list = res.data.list
+        this.total = res.data.total
         this.listLoading = false
       })
     },
@@ -356,7 +356,9 @@ export default {
           this.list.splice(index, 1)
         })
     },
-    changePage() {},
+    changePage() {
+      this.getData()
+    },
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then((excel) => {

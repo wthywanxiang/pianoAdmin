@@ -1,6 +1,9 @@
 <template>
   <div class="app-container">
-    <!-- Note that row-key is necessary to get a correct row order. -->
+    <div class="show-d">
+      <el-tag>预约状态码 :</el-tag>
+      <el-tag>（0为未开始，1为正常结束，2为迟到，3为违约）</el-tag>
+    </div>
     <el-input
       v-model="listQuery.sno"
       placeholder="输入学生学号查找"
@@ -79,23 +82,23 @@
           </el-tag>
         </template>
       </el-table-column>
-
     </el-table>
-    <div class="show-d">
-      <el-tag>预约状态码 :</el-tag>
-    </div>
-    <div class="show-d">
-      <el-tag>（0为未开始，1为正常结束，2为迟到，3为违约）</el-tag>
-    </div>
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      @pagination="changePage"
+    />
   </div>
 </template>
 
 <script>
-import { fetchList } from '@/api/article'
-import Sortable from 'sortablejs'
 import { getReserveByFuzzyQuery } from '@/api/table'
+import Pagination from '@/components/Pagination'
 export default {
   name: 'DragTable',
+  components: {Pagination },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -109,7 +112,7 @@ export default {
   data() {
     return {
       list: null,
-      total: null,
+      total: 0,
       listLoading: true,
       listQuery: {
         page: 1,
@@ -130,6 +133,8 @@ export default {
         console.log('res', res)
         this.list = res.data
         this.listLoading = false
+        this.total = this.list.length
+        console.log('total', this.total)
       })
     },
     getStatusText(row) {
@@ -139,59 +144,14 @@ export default {
       else if (row.status === 2) return '迟到记录'
       else if (row.status === 3) return '违约记录'
     },
-    async getList() {
-      this.listLoading = true
-      const { data } = await fetchList(this.listQuery)
-      this.list = data.items
-      this.total = data.total
-      this.listLoading = false
-      this.oldList = this.list.map(v => v.id)
-      this.newList = this.oldList.slice()
-      this.$nextTick(() => {
-        this.setSort()
-      })
-    },
-    setSort() {
-      const el = this.$refs.dragTable.$el.querySelectorAll('.el-table__body-wrapper > table > tbody')[0]
-      this.sortable = Sortable.create(el, {
-        ghostClass: 'sortable-ghost', // Class name for the drop placeholder,
-        setData: function(dataTransfer) {
-          // to avoid Firefox bug
-          // Detail see : https://github.com/RubaXa/Sortable/issues/1012
-          dataTransfer.setData('Text', '')
-        },
-        onEnd: evt => {
-          const targetRow = this.list.splice(evt.oldIndex, 1)[0]
-          this.list.splice(evt.newIndex, 0, targetRow)
-
-          // for show the changes, you can delete in you code
-          const tempIndex = this.newList.splice(evt.oldIndex, 1)[0]
-          this.newList.splice(evt.newIndex, 0, tempIndex)
-        }
-      })
+    changePage() {
+      this.getData()
     }
   }
 }
 </script>
-
-<style>
-.sortable-ghost{
-  opacity: .8;
-  color: #fff!important;
-  background: #42b983!important;
-}
-</style>
-
 <style scoped>
-.icon-star{
-  margin-right:2px;
-}
-.drag-handler{
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-}
 .show-d{
-  margin-top: 15px;
+  padding: 15px;
 }
 </style>
