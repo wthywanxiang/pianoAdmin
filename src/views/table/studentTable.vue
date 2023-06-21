@@ -13,12 +13,6 @@
         style="width: 200px"
         class="filter-item"
       />
-      <el-option
-        v-for="item in piece"
-        :key="item.key"
-        :label="item.label"
-        :value="item.key"
-      />
       <el-select
         v-model="listQuery.grade"
         placeholder="年级"
@@ -221,7 +215,6 @@
 
 <script>
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
 import {
   getStudentDetailsByFuzzyQuery,
@@ -315,6 +308,12 @@ export default {
   },
   methods: {
     getData() {
+      if (this.listQuery.grade === '') {
+        this.listQuery.grade = null
+      }
+      if (this.listQuery.clazz === '') {
+        this.listQuery.clazz = null
+      }
       getStudentDetailsByFuzzyQuery(this.listQuery).then(res => {
         this.list = res.data.list
         this.total = res.data.total
@@ -388,37 +387,6 @@ export default {
     },
     changePage() {
       this.getData()
-    },
-    handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Excel').then((excel) => {
-        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-        const filterVal = [
-          'timestamp',
-          'title',
-          'type',
-          'importance',
-          'status'
-        ]
-        const data = this.formatJson(filterVal)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: 'table-list'
-        })
-        this.downloadLoading = false
-      })
-    },
-    formatJson(filterVal) {
-      return this.list.map((v) =>
-        filterVal.map((j) => {
-          if (j === 'timestamp') {
-            return parseTime(v[j])
-          } else {
-            return v[j]
-          }
-        })
-      )
     }
   }
 }

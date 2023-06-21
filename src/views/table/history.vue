@@ -29,7 +29,6 @@
       class="filter-item"
     />
     <el-button
-      v-waves
       class="filter-item"
       type="primary"
       icon="el-icon-search"
@@ -98,7 +97,7 @@ import { getReserveByFuzzyQuery } from '@/api/table'
 import Pagination from '@/components/Pagination'
 export default {
   name: 'DragTable',
-  components: {Pagination },
+  components: { Pagination },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -111,7 +110,7 @@ export default {
   },
   data() {
     return {
-      list: null,
+      list: [],
       total: 0,
       listLoading: true,
       listQuery: {
@@ -138,7 +137,6 @@ export default {
       })
     },
     getStatusText(row) {
-      //
       if (row.status === 0) return '尚未开始'
       else if (row.status === 1) return '准时记录'
       else if (row.status === 2) return '迟到记录'
