@@ -292,6 +292,17 @@ export default {
         this.listLoading = false
       })
     },
+    resetTemp() {
+      this.temp = {
+        id: undefined,
+        importance: 1,
+        remark: '',
+        timestamp: new Date(),
+        title: '',
+        status: 'published',
+        type: ''
+      }
+    },
     handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
@@ -303,6 +314,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          console.log(this.temp)
           addTeacher({
             tno: this.temp.number,
             name: this.temp.name,
