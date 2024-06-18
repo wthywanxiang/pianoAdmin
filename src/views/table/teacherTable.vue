@@ -9,7 +9,7 @@
       />
       <el-input
         v-model="listQuery.number"
-        placeholder="输入编号查找"
+        placeholder="输入编号查找1"
         style="width: 200px"
         class="filter-item"
       />
